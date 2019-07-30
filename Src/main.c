@@ -67,6 +67,12 @@ const uint16_t sine_wave_array[32] = {
 #endif
 const uint16_t sine_wave_array[32] = {
 				   4000, 0, 4000, 0};
+uint16_t sine_buffer[256];
+const uint16_t sine_wave_array_2[32] = {
+				   2000, 0, 2000, 0};
+
+int16_t int_sine_buffer[256];
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -119,7 +125,17 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start(&htim6);
   HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
-  HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_1, (uint32_t*)sine_wave_array, 4, DAC_ALIGN_12B_R);
+  //HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_1, (uint32_t*)sine_wave_array, 4, DAC_ALIGN_12B_R);
+
+
+  int16_t X = 0, Y = 8180;
+  for (int i = 0; i < 256; i++) {
+	X = X + (Y * 4) / 163;
+	Y = Y - (X * 4) / 163;
+	sine_buffer[i] = (X >> 2) + 2048;
+	int_sine_buffer[i] = X >> 2;
+  }
+
 
   /* USER CODE END 2 */
 
@@ -128,7 +144,8 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+	  HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_1, (uint32_t*)sine_buffer, 256, DAC_ALIGN_12B_R);
+	  //HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_1, (uint32_t*)sine_wave_array_2, 4, DAC_ALIGN_12B_R);
     /* USER CODE BEGIN 3 */
 
   }
